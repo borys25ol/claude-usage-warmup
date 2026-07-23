@@ -88,4 +88,5 @@ echo
 echo "Installed. Current schedule:"
 pmset -g sched
 echo
-echo "Test the script now with:  bash $SCRIPT && tail $HOME/.claude/warmup.log"
+echo "Test the script now with:  make test"
+echo "  (or without make:         bash $SCRIPT && tail $HOME/.claude/warmup.log)"
