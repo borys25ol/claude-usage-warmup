@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Template. launchd does not expand $HOME or ~, so install-warmup.sh
+  substitutes the __PLACEHOLDER__ tokens with absolute paths before
+  copying the result into ~/Library/LaunchAgents/.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.claude-usage-warmup</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>__SCRIPT_PATH__</string>
+    </array>
+
+    <!-- Run every day at the time injected by the installer. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>__RUN_HOUR__</integer>
+        <key>Minute</key>
+        <integer>__RUN_MINUTE__</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>__LOG_PATH__</string>
+    <key>StandardErrorPath</key>
+    <string>__LOG_PATH__</string>
+</dict>
+</plist>
