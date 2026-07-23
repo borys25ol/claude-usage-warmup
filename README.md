@@ -72,6 +72,28 @@ bash uninstall-warmup.sh   # prompts for sudo to cancel the wake
 - Requires the [Claude Code CLI](https://claude.com/claude-code) (`claude`) on
   `PATH`, already authenticated.
 
+## Coexistence with other pmset schedules
+
+macOS keeps only **one** repeating `pmset` schedule for the whole system (a
+single slot), while `launchd` agents are independent. So:
+
+- **The LaunchAgent is fully isolated** — its unique `Label` never collides
+  with other agents.
+- **The repeating wake is a shared, single slot.** Setting one replaces any
+  existing repeating schedule, and `pmset repeat cancel` clears *all* of it.
+
+To stay a good citizen, the scripts guard this slot:
+
+- `install-warmup.sh` detects an existing repeating schedule that isn't ours
+  and asks before overwriting it.
+- `uninstall-warmup.sh` shows the current repeating schedule and asks before
+  cancelling, since cancel is all-or-nothing.
+
+If you need wakes at **several different times**, note that one repeating slot
+cannot express that — you would use one-time `pmset schedule` entries (which do
+stack) and re-arm them, at the cost of the "set and forget" reliability the
+repeating slot gives.
+
 ## Verify / test
 
 Run the script by hand:
