@@ -75,7 +75,18 @@ RUN_TIME=07:15 WAKE_LEAD_MIN=5 bash install-warmup.sh    # run at 07:15, wake 07
 ```
 
 Re-running the installer just overwrites the previous schedule — no need to
-uninstall first. To change the model, edit `claude-warmup.sh`.
+uninstall first.
+
+### Model
+
+The warmup uses the cheapest model (Haiku) by default. It lives in one place —
+`MODEL` at the top of `claude-warmup.sh`. Edit that line to change the installed
+default (the LaunchAgent runs the script as-is). For a manual run you can also
+override it via an environment variable:
+
+```bash
+CLAUDE_WARMUP_MODEL=claude-sonnet-5 bash claude-warmup.sh
+```
 
 ## Uninstall
 
