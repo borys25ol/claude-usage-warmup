@@ -8,12 +8,26 @@
 # Run once:  bash install-warmup.sh
 set -euo pipefail
 
-# ---- Configuration (edit to taste) -----------------------------------------
-WAKE_TIME="10:28:00"   # pmset wake, a couple of minutes before the run
-RUN_HOUR=10            # LaunchAgent run time — hour (0-23)
-RUN_MINUTE=30          # LaunchAgent run time — minute (0-59)
+# ---- Configuration (edit to taste, or override via env) --------------------
+RUN_TIME="${RUN_TIME:-10:30}"        # daily run time, HH:MM (24-hour)
+WAKE_LEAD_MIN="${WAKE_LEAD_MIN:-2}"  # wake this many minutes before the run
 LABEL="com.claude-usage-warmup"
 # ----------------------------------------------------------------------------
+
+# Validate RUN_TIME and derive everything else from it, so the run time lives
+# in exactly one place and the wake can never drift out of sync.
+if ! [[ "$RUN_TIME" =~ ^[0-9]{1,2}:[0-9]{2}$ ]]; then
+    echo "Error: RUN_TIME must be HH:MM (24-hour), got '$RUN_TIME'." >&2
+    exit 1
+fi
+RUN_HOUR=$((10#${RUN_TIME%%:*}))
+RUN_MINUTE=$((10#${RUN_TIME#*:}))
+if [ "$RUN_HOUR" -gt 23 ] || [ "$RUN_MINUTE" -gt 59 ]; then
+    echo "Error: RUN_TIME out of range: '$RUN_TIME'." >&2
+    exit 1
+fi
+# WAKE_TIME = RUN_TIME minus WAKE_LEAD_MIN, formatted HH:MM:SS for pmset.
+WAKE_TIME="$(date -j -v-"${WAKE_LEAD_MIN}"M -f "%H:%M" "$RUN_TIME" "+%H:%M:00")"
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 SCRIPT="$DIR/claude-warmup.sh"
@@ -54,7 +68,8 @@ if [ -n "$existing_repeat" ] && ! echo "$existing_repeat" | grep -q "$wake_disp"
     esac
 fi
 
-echo "Scheduling daily wake at $WAKE_TIME (needs sudo)..."
+echo "Run at $RUN_TIME, waking at $WAKE_TIME ($WAKE_LEAD_MIN min earlier)."
+echo "Scheduling daily wake (needs sudo)..."
 sudo pmset repeat wakeorpoweron MTWRFSU "$WAKE_TIME"
 
 # 2) Render the LaunchAgent from the template with absolute paths.

@@ -49,9 +49,21 @@ bash install-warmup.sh   # prompts for sudo (needed by pmset)
 
 This schedules the daily wake and loads the LaunchAgent. That's it.
 
-To change the times or the model, edit the config block at the top of
-`install-warmup.sh` (wake time, run hour/minute) and re-run it, or edit the
-model in `claude-warmup.sh`.
+### Custom time
+
+The run time lives in a single place — `RUN_TIME` (24-hour `HH:MM`) in the
+config block at the top of `install-warmup.sh`. The wake is derived from it
+automatically as `WAKE_LEAD_MIN` minutes earlier (2 by default), so the two can
+never drift out of sync. Edit those values and re-run the installer, or
+override them via environment variables without touching the file:
+
+```bash
+RUN_TIME=09:00 bash install-warmup.sh                    # run at 09:00, wake 08:58
+RUN_TIME=07:15 WAKE_LEAD_MIN=5 bash install-warmup.sh    # run at 07:15, wake 07:10
+```
+
+Re-running the installer just overwrites the previous schedule — no need to
+uninstall first. To change the model, edit `claude-warmup.sh`.
 
 ## Uninstall
 
