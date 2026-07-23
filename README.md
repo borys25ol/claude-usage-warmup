@@ -36,6 +36,7 @@ result to `~/.claude/warmup.log`. Defaults: wake at **10:28**, run at **10:30**.
 | `com.claude-usage-warmup.plist.template` | LaunchAgent template; the installer fills in absolute paths |
 | `install-warmup.sh` | One-time installer: schedules the wake and loads the agent |
 | `uninstall-warmup.sh` | Removes the agent and cancels the wake |
+| `Makefile` | Convenience targets wrapping the scripts (`make help`) |
 
 > `launchd` does not expand `$HOME` or `~`, so the plist ships as a template
 > with `__PLACEHOLDER__` tokens. The installer renders it with absolute paths
@@ -48,6 +49,17 @@ bash install-warmup.sh   # prompts for sudo (needed by pmset)
 ```
 
 This schedules the daily wake and loads the LaunchAgent. That's it.
+
+Or use the `Makefile` for a tidier command surface:
+
+```bash
+make help       # list all targets
+make install    # same as bash install-warmup.sh (RUN_TIME=HH:MM to override)
+make uninstall  # remove the agent and cancel the wake
+make test       # run the warmup once and show the log
+make status     # show the pmset schedule and LaunchAgent state
+make logs       # tail the warmup log
+```
 
 ### Custom time
 
