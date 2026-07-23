@@ -157,3 +157,7 @@ launchctl print "gui/$(id -u)/com.claude-usage-warmup"
 # Read the log
 tail ~/.claude/warmup.log
 ```
+
+## License
+
+[MIT](LICENSE) © Borys Oliinyk
